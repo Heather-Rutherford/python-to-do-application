@@ -15,14 +15,12 @@
 #################################
 
 class ToDoTask:
-    def __init__(self, title, description, start_date, end_date):
+    def __init__(self, title, description):
         self.title = title
         self.description = description
-        self.start_date = start_date
-        self.end_date = end_date
     
     def __str__(self):
-        return f"{self.title}: {self.description} (From {self.start_date} to {self.end_date})"
+        return f"{self.title}: {self.description})"
 
 ################################
 # Global list to store tasks
@@ -43,46 +41,63 @@ def display_menu():
 
 # Add Task Function
 def add_task():
-    try:
-        title = input("Enter task title: ")
-        description = input("Enter task description: ")
-        start_date = input("Enter start date (YYYY-MM-DD): ")
-        end_date = input("Enter end date (YYYY-MM-DD): ")
-        task = ToDoTask(title, description, start_date, end_date)
-        tasks.append(task)
-        print(f'Task "{title}" added.')
-    except Exception as e:
-        print(f"An error occurred while adding a task: {e}")
-
+    while True:
+        try:
+            title = input("Enter task title: ")
+            description = input("Enter task description: ")
+            task = ToDoTask(title, description)
+            tasks.append(task)
+            print(f'Task "{title}" added.')
+        except Exception as e:
+            print(f"An error occurred while adding a task: {e}")
+        more = input("Do you want to add another task? (y/n): ").strip().lower()
+        while more not in ['y', 'n']:
+            more = input("Invalid answer. Please enter 'y' or 'n': ").strip().lower()
+        if more != 'y':
+            break
+     
+ 
 # View Tasks Function
 def view_tasks():
-    try:
-        if not tasks:
-            print("No tasks in the list.")
-        else:
-            print("\nYour Tasks:")
-            for idx, task in enumerate(tasks, start=1):
-                print(f"{idx}. {task}")
-    except  Exception as e:
-        print(f"An error occurred while viewing tasks: {e}")
+    while True:
+        try:
+            if not tasks:
+                print("No tasks in the list.")
+            else:
+                print("\nYour Tasks:")
+                for idx, task in enumerate(tasks, start=1):
+                    print(f"{idx}. {task}")
+        except  Exception as e:
+            print(f"An error occurred while viewing tasks: {e}")
+        more = input("Do you want to view the tasks again? (y/n): ").strip().lower()
+        while more not in ['y', 'n']:
+            more = input("Invalid answer. Please enter 'y' or 'n': ").strip().lower()
+        if more != 'y':
+            break
         
 # Delete Task Function
 def delete_task():
-    try:
-        view_tasks()
-        if tasks:
-            try:
-                task_num = int(input("Enter the task number to delete: "))
-                if 1 <= task_num <= len(tasks):
-                    removed_task = tasks.pop(task_num - 1)
-                    print(f'Task "{removed_task.title}" deleted.')
-                else:
-                    print("Invalid task number.")
-            except ValueError:
-                print("Please enter a valid number.")
-    except Exception as e:
-        print(f"An error occurred while deleting a task: {e}")
-        
+    while True:
+        try:
+            view_tasks()
+            if tasks:
+                try:
+                    task_num = int(input("Enter the task number to delete: "))
+                    if 1 <= task_num <= len(tasks):
+                        removed_task = tasks.pop(task_num - 1)
+                        print(f'Task "{removed_task.title}" deleted.')
+                    else:
+                        print("Invalid task number.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        except Exception as e:
+            print(f"An error occurred while deleting a task: {e}")
+        more = input("Do you want to delete another task? (y/n): ").strip().lower()
+        while more not in ['y', 'n']:
+            more = input("Invalid answer. Please enter 'y' or 'n': ").strip().lower()
+        if more != 'y':
+            break
+                
 ################################
 # Main Program Loop
 ################################
@@ -103,15 +118,15 @@ def main():
             
             if choice == '1':
                 add_task()
-                input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
+                # input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
             elif choice == '2':
                 view_tasks()
-                input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
+                # input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
             elif choice == '3':
                 delete_task()
-                input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
+                # input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
         else:
-            print("Invalid choice! Please select a valid option (1-5).")
+            print("Invalid choice! Please select a valid option (1-4).")
             
 if __name__ == "__main__":
     main()
