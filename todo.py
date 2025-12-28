@@ -10,22 +10,62 @@
 #################################
 # VERSION 1.0                   #
 # Author: Heather Rutherford    #
-# Date: January 1, 2026         #
+# Date: December 27, 2025       #
 # Class: To-Do Class            #
 #################################
 
+#################################
+# Classes                       #
+#################################
+
 class ToDoTask:
-    def __init__(self, title, description):
+    """Class representing a single To-Do task."""
+    
+    def __init__(self, title: str, description: str):
         self.title = title
         self.description = description
-    
-    def __str__(self):
-        return f"{self.title}: {self.description})"
+        
+    def __str__(self) -> str:
+        return f'Title: {self.title}, Description: {self.description}'
 
 ################################
-# Global list to store tasks
+# Custom Exceptions
 ################################
-tasks = []
+
+class NoTasksToDeleteError(Exception):
+    """Raised when attempting to delete from an empty task list"""
+    def __init__(self, message="No tasks exist to delete"):
+        self.message = message
+        super().__init__(self.message)
+    
+class ToDoTaskManager:
+    """Class to manage To-Do tasks."""
+    
+    def __init__(self) -> None:
+        self.tasks = []
+        
+    def add_task(self, title: str, description: str) -> ToDoTask:
+        """Add a new task."""
+        task = ToDoTask(title, description)
+        self.tasks.append(task)
+        return task
+    
+    def get_all_tasks(self) -> list:
+        """Return all tasks."""
+        return self.tasks.copy()
+    
+    def delete_task(self, index: int) -> ToDoTask:
+        """Delete a task at a given index."""
+        if not self.tasks:
+            raise NoTasksToDeleteError()
+        if 0 <= index < len(self.tasks):
+            return self.tasks.pop(index)
+        else:
+            raise ValueError("Invalid task number.")
+        
+    def is_empty(self) -> bool:
+        """Check if the task list is empty."""
+        return len(self.tasks) == 0
 
 ################################
 # User Interface Functions
@@ -40,61 +80,68 @@ def display_menu():
     print("4. Quit")
 
 # Add Task Function
-def add_task():
+def add_task(manager):
     while True:
         try:
-            title = input("Enter task title: ")
+            title = input("\nEnter task title or press Enter to cancel: ")
+            if title.strip() == '':
+                break
             description = input("Enter task description: ")
-            task = ToDoTask(title, description)
-            tasks.append(task)
+            task = manager.add_task(title, description)
             print(f'Task "{title}" added.')
         except Exception as e:
-            print(f"An error occurred while adding a task: {e}")
-        more = input("Do you want to add another task? (y/n): ").strip().lower()
+            print(f"\nAn error occurred while adding a task: {e}")
+            
+        more = input("\nDo you want to add another task? (y/n): ").strip().lower()
         while more not in ['y', 'n']:
-            more = input("Invalid answer. Please enter 'y' or 'n': ").strip().lower()
+            more = input("\nInvalid answer. Please enter 'y' or 'n': ").strip().lower()
         if more != 'y':
             break
-     
  
 # View Tasks Function
-def view_tasks():
-    while True:
-        try:
-            if not tasks:
-                print("No tasks in the list.")
-            else:
-                print("\nYour Tasks:")
-                for idx, task in enumerate(tasks, start=1):
-                    print(f"{idx}. {task}")
-        except  Exception as e:
-            print(f"An error occurred while viewing tasks: {e}")
-        more = input("Do you want to view the tasks again? (y/n): ").strip().lower()
-        while more not in ['y', 'n']:
-            more = input("Invalid answer. Please enter 'y' or 'n': ").strip().lower()
-        if more != 'y':
-            break
+def view_tasks(action, manager):
+    try:
+        tasks = manager.get_all_tasks()
+        if not tasks:
+            print("\nNo tasks in the list.")
+        else:
+            print("\nYour Tasks:\n")
+            for idx, task in enumerate(tasks, start=1):
+                print(f"{idx}. {task}")
+    except Exception as e:
+        print(f"\nAn error occurred while viewing tasks: {e}")
+    
+    if action == 'view':
+        input("\nPress any key to return to the main menu...")
         
 # Delete Task Function
-def delete_task():
+def delete_task(manager):
     while True:
         try:
-            view_tasks()
-            if tasks:
-                try:
-                    task_num = int(input("Enter the task number to delete: "))
-                    if 1 <= task_num <= len(tasks):
-                        removed_task = tasks.pop(task_num - 1)
-                        print(f'Task "{removed_task.title}" deleted.')
-                    else:
-                        print("Invalid task number.")
-                except ValueError:
-                    print("Please enter a valid number.")
+           tasks = manager.get_all_tasks()
+           if not tasks:
+                raise NoTasksToDeleteError()
+           
+           view_tasks('delete', manager)
+           task_num_input = input("\nEnter the task number to delete or press Enter to cancel: ")
+           if task_num_input.strip() == '':
+               break
+           task_num = int(task_num_input)
+           manager.delete_task(task_num - 1)
+           print(f'\nTask number {task_num} deleted.')
+            
+        except NoTasksToDeleteError as e:
+            print(e.message)
+            input("\nPress any key to return to the main menu...")
+            break
+        except ValueError:
+            print("\nPlease enter a valid number.")
         except Exception as e:
-            print(f"An error occurred while deleting a task: {e}")
-        more = input("Do you want to delete another task? (y/n): ").strip().lower()
+            print(f"\nAn error occurred while deleting a task: {e}")
+
+        more = input("\nDo you want to delete another task? (y/n): ").strip().lower()
         while more not in ['y', 'n']:
-            more = input("Invalid answer. Please enter 'y' or 'n': ").strip().lower()
+            more = input("\nInvalid answer. Please enter 'y' or 'n': ").strip().lower()
         if more != 'y':
             break
                 
@@ -102,75 +149,27 @@ def delete_task():
 # Main Program Loop
 ################################
 def main():
+    manager = ToDoTaskManager()
     print("Welcome to the To-Do List Application!")
     
     while True:
         display_menu()
-        choice = input("Choose an option (1-4): ")
+        choice = input("\nChoose an option (1-4): ")
         
         if choice == '4':
-            print("Exiting the application. Goodbye!")
+            print("\nExiting the application. Goodbye!")
             break
-        # Further options will be implemented here
-
 
         if choice in ['1', '2', '3']:
             
             if choice == '1':
-                add_task()
-                # input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
+                add_task(manager)
             elif choice == '2':
-                view_tasks()
-                # input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
+                view_tasks('view', manager)
             elif choice == '3':
-                delete_task()
-                # input("Press Enter to continue...") # This line pauses the program until the user presses the Enter key
+                delete_task(manager)
         else:
             print("Invalid choice! Please select a valid option (1-4).")
             
 if __name__ == "__main__":
     main()
-
-
-
-# def add_task():
-#     task = input("Enter a new task: ")
-#     tasks.append(task)
-#     print(f'Task "{task}" added.')
-
-# def view_tasks():
-#     if not tasks:
-#         print("No tasks in the list.")
-#     else:
-#         print("\nYour Tasks:")
-#         for idx, task in enumerate(tasks, start=1):
-#             print(f"{idx}. {task}")
-
-# def delete_task():
-#     view_tasks()
-#     if tasks:
-#         try:
-#             task_num = int(input("Enter the task number to delete: "))
-#             if 1 <= task_num <= len(tasks):
-#                 removed_task = tasks.pop(task_num - 1)
-#                 print(f'Task "{removed_task}" deleted.')
-#             else:
-#                 print("Invalid task number.")
-#         except ValueError:
-#             print("Please enter a valid number.")
-
-# while True:
-#     display_menu()
-#     choice = input("Choose an option (1-4): ")
-    
-#     if choice == '1':
-#         add_task()
-#     elif choice == '2':
-#         view_tasks()
-#     elif choice == '3':
-#         delete_task()
-#     elif choice == '4':
-#         print("Exiting the application. Goodbye!")
-#         break
-#     else:
-#         print("Invalid choice. Please select a valid option.")
