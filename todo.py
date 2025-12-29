@@ -136,8 +136,10 @@ def delete_task(manager):
             break
         except ValueError:
             print("\nPlease enter a valid number.")
+            continue  # Go back to the start of the loop to ask for input again
         except Exception as e:
             print(f"\nAn error occurred while deleting a task: {e}")
+            continue  # Go back to the start of the loop to ask for input again
 
         more = input("\nDo you want to delete another task? (y/n): ").strip().lower()
         while more not in ['y', 'n']:
@@ -157,7 +159,7 @@ def main():
         choice = input("\nChoose an option (1-4): ")
         
         if choice == '4':
-            print("\nExiting the application. Goodbye!\n1")
+            print("\nExiting the application. Goodbye!\n")
             break
 
         if choice in ['1', '2', '3']:
