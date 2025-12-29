@@ -14,6 +14,16 @@
 # Class: To-Do Class            #
 #################################
 
+################################
+# Custom Exceptions
+################################
+
+class NoTasksToDeleteError(Exception):
+    """Raised when attempting to delete from an empty task list"""
+    def __init__(self, message="No tasks exist to delete"):
+        self.message = message
+        super().__init__(self.message)
+    
 #################################
 # Classes                       #
 #################################
@@ -26,18 +36,8 @@ class ToDoTask:
         self.description = description
         
     def __str__(self) -> str:
-        return f'Title: {self.title}, Description: {self.description}'
+        return f'Title: {self.title}\n Description: {self.description}\n'
 
-################################
-# Custom Exceptions
-################################
-
-class NoTasksToDeleteError(Exception):
-    """Raised when attempting to delete from an empty task list"""
-    def __init__(self, message="No tasks exist to delete"):
-        self.message = message
-        super().__init__(self.message)
-    
 class ToDoTaskManager:
     """Class to manage To-Do tasks."""
     
@@ -73,7 +73,7 @@ class ToDoTaskManager:
 
 # Main Menu Display Function
 def display_menu():
-    print("\nTo-Do List Application")
+    print("\nTo-Do List Application\n")
     print("1. Add Task")
     print("2. View Tasks")
     print("3. Delete Task")
@@ -150,14 +150,14 @@ def delete_task(manager):
 ################################
 def main():
     manager = ToDoTaskManager()
-    print("Welcome to the To-Do List Application!")
+    print("\nWelcome to the To-Do List Application!")
     
     while True:
         display_menu()
         choice = input("\nChoose an option (1-4): ")
         
         if choice == '4':
-            print("\nExiting the application. Goodbye!")
+            print("\nExiting the application. Goodbye!\n1")
             break
 
         if choice in ['1', '2', '3']:
