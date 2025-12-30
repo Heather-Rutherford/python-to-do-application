@@ -12,7 +12,7 @@ In this project, you will build a functional To-Do List Application using Python
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Heather-Rutherford/todo-app.git
+   git clone https://github.com/Heather-Rutherford/python-to-do-application.git
    ```
 2. Navigate to the project directory:
    ```bash
